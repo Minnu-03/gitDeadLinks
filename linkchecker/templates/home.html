@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Dead Link Fixer</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background-color: #007bff;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .result-section {
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .link-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .link-list li {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .dead-link {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .archive-link {
+            color: #2d97ff;
+            text-decoration: none;
+        }
+
+        .archive-link:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .repo-url-display {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>GitHub Dead Link Fixer</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="repo_url">Enter GitHub Repo URL:</label>
+            <input type="text" id="repo_url" name="repo_url" class="form-control" placeholder="https://github.com/your-repo" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Check Dead Links</button>
+    </form>
+
+    {% if repo_url %}
+    <div class="result-section">
+        <h2>Submitted Repo URL:</h2>
+        <p class="repo-url-display">{{ repo_url }}</p>
+    </div>
+    {% endif %}
+
+    {% if links %}
+    <div class="result-section">
+        <h2>Extracted Links:</h2>
+        <ul class="link-list">
+            {% for link in links %}
+            <li>{{ link }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if dead_links %}
+    <div class="result-section">
+        <h2 class="dead-link">Dead Links:</h2>
+        <ul class="link-list">
+            {% for dead_link in dead_links %}
+            <li class="dead-link">{{ dead_link }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if archived_links %}
+    <div class="result-section">
+        <h2>Archived Links:</h2>
+        <ul class="link-list">
+            {% for dead_link, archive_link in archived_links.items %}
+            <li>
+                {{ dead_link }} → <a href="{{ archive_link }}" class="archive-link" target="_blank">{{ archive_link }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error-message">
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Bootstrap JS (optional for features like dropdowns, modals) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>
